@@ -1,4 +1,4 @@
-import { useHomeScreenData } from "../hooks/useHomeScreenData";
+import { useHomeScreenData } from "../hooks/useTable";
 
 type HomeScreenProps = {
   displayName: string;
