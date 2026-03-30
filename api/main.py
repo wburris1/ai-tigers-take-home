@@ -5,6 +5,8 @@ from pathlib import Path
 from typing import List, Optional
 
 import jwt
+from google import genai
+from google.genai import errors as genai_errors
 from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -84,6 +86,10 @@ class LoginRequest(BaseModel):
     password: str
 
 
+class AiQueryRequest(BaseModel):
+    query: str
+
+
 @app.post("/api/login")
 def login(body: LoginRequest):
     email = body.email.strip()
@@ -142,3 +148,42 @@ def get_table_data(
         "offset": offset,
         "limit": limit,
     }
+
+
+@app.post("/api/ai-request")
+def ai_request(
+    body: AiQueryRequest,
+    _user: dict = Depends(get_current_user),
+):
+    """Send `query` to Google Gemini via the GenAI SDK (see Gemini API quickstart)."""
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        raise HTTPException(
+            status_code=500,
+            detail="GEMINI_API_KEY is not configured",
+        )
+    model = os.environ.get("GEMINI_MODEL", "gemini-3-flash-preview")
+    client = genai.Client(api_key=api_key)
+    try:
+        response = client.models.generate_content(
+            model=model,
+            contents=body.query,
+        )
+    except genai_errors.APIError as exc:
+        raise HTTPException(
+            status_code=502,
+            detail={
+                "message": str(exc),
+                "code": exc.code,
+                "details": exc.details,
+            },
+        ) from exc
+
+    text = response.text
+    if text is None:
+        raise HTTPException(
+            status_code=502,
+            detail="Gemini returned no text in the response",
+        )
+
+    return {"text": text, "model": model}
