@@ -64,3 +64,22 @@ body {
   font-size: 0.85rem;
   color: #555;
 }
+
+.data-section-query {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-width: 28rem;
+}
+
+.data-section-query label {
+  font-size: 0.9rem;
+}
+
+.data-section-query input {
+  padding: 0.4rem 0.5rem;
+  font: inherit;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}

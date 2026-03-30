@@ -1,3 +1,4 @@
+import { useQueryInput } from "../hooks/useQueryInput";
 import { useHomeScreenData } from "../hooks/useTable";
 
 type HomeScreenProps = {
@@ -20,6 +21,8 @@ export function HomeScreen({ displayName, onLogout }: HomeScreenProps) {
     scrollRef,
     sentinelRef,
   } = useHomeScreenData();
+
+  const { query, onQueryChange } = useQueryInput();
 
   return (
     <div className="app">
@@ -77,6 +80,17 @@ export function HomeScreen({ displayName, onLogout }: HomeScreenProps) {
               {isFetchingNextPage && (
                 <p className="data-table-loading">Loading more…</p>
               )}
+            </div>
+            <div className="data-section-query">
+              <label htmlFor="home-screen-query">Query</label>
+              <input
+                id="home-screen-query"
+                name="query"
+                type="text"
+                value={query}
+                onChange={onQueryChange}
+                autoComplete="off"
+              />
             </div>
           </>
         )}
