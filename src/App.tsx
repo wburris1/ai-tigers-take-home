@@ -1,8 +1,20 @@
+import { LoginScreen } from "./components/LoginScreen";
+import { useAuthSession } from "./hooks/useAuthSession";
+
 function App() {
+  const { isAuthenticated, displayName, onLoginSuccess, onLogout } =
+    useAuthSession();
+
+  if (!isAuthenticated) {
+    return <LoginScreen onLoginSuccess={onLoginSuccess} />;
+  }
+
   return (
-    <main className="app">
-      <h1>Hello</h1>
-      <p>React + TypeScript + Vite is running.</p>
+    <main>
+      <p>Signed in as {displayName}</p>
+      <button type="button" onClick={onLogout}>
+        Log out
+      </button>
     </main>
   );
 }
