@@ -1,3 +1,4 @@
+import { HomeScreen } from "./components/HomeScreen";
 import { LoginScreen } from "./components/LoginScreen";
 import { useAuthSession } from "./hooks/useAuthSession";
 
@@ -9,14 +10,7 @@ function App() {
     return <LoginScreen onLoginSuccess={onLoginSuccess} />;
   }
 
-  return (
-    <main>
-      <p>Signed in as {displayName}</p>
-      <button type="button" onClick={onLogout}>
-        Log out
-      </button>
-    </main>
-  );
+  return <HomeScreen displayName={displayName} onLogout={onLogout} />;
 }
 
 export default App;

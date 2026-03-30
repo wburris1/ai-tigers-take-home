@@ -14,3 +14,53 @@ body {
   min-height: 100vh;
   padding: 2rem;
 }
+
+.data-section {
+  margin-top: 1.5rem;
+}
+
+.data-meta {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+}
+
+.data-table-wrap {
+  max-height: min(70vh, 32rem);
+  overflow: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.data-table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.data-table th,
+.data-table td {
+  border: 1px solid #ddd;
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.data-table th {
+  position: sticky;
+  top: 0;
+  background: #f2f2f2;
+  z-index: 1;
+}
+
+.data-table-sentinel {
+  height: 1px;
+}
+
+.data-table-loading {
+  margin: 0.5rem 0 0;
+  padding: 0 0.75rem 0.5rem;
+  font-size: 0.85rem;
+  color: #555;
+}
