@@ -6,9 +6,6 @@ import {
 } from "react";
 import { useLogin } from "./api/useLogin";
 
-const EMAIL = "example@helloconstellation.com";
-const PASSWORD = "ConstellationInterview123!";
-
 type UseLoginFormOptions = {
   onLoginSuccess?: () => void;
 };
@@ -37,10 +34,6 @@ export function useLoginForm(options: UseLoginFormOptions = {}) {
   const onSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      if (email !== EMAIL || password !== PASSWORD) {
-        alert("Invalid email or password");
-        return;
-      }
       mutate(
         { email, password },
         {
