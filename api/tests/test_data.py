@@ -4,7 +4,8 @@ import jwt
 import pytest
 from fastapi.testclient import TestClient
 
-from main import JWT_SECRET, VALID_EMAIL, VALID_PASSWORD, USER_NAME, app
+from config import JWT_SECRET, VALID_EMAIL, VALID_PASSWORD, USER_NAME
+from main import app
 
 client = TestClient(app)
 

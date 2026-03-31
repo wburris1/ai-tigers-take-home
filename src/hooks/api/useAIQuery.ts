@@ -8,6 +8,12 @@ export type AiQueryVariables = {
 export type AiQueryResult = {
   text: string;
   model: string;
+  sql?: string;
+  result_preview?: {
+    columns: string[];
+    rows: unknown[][];
+    truncated: boolean;
+  };
 };
 
 async function postAiRequest(variables: AiQueryVariables): Promise<AiQueryResult> {

@@ -119,6 +119,12 @@ export function HomeScreen({ displayName, onLogout }: HomeScreenProps) {
                   <p className="ai-query-result-meta">
                     Model: <code>{aiResult.model}</code>
                   </p>
+                  {aiResult.sql && (
+                    <p className="ai-query-result-meta">
+                      SQL:{" "}
+                      <code className="ai-query-result-sql">{aiResult.sql}</code>
+                    </p>
+                  )}
                   <pre className="ai-query-result-text">{aiResult.text}</pre>
                 </div>
               )}

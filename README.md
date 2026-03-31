@@ -93,6 +93,26 @@ Submit the link to your repository when complete.
 
 ---
 
+## Implementation notes (this fork)
+
+This section satisfies the **Infrastructure Writeup** expectation for the solution in this repository.
+
+**Stack.** The UI is a React (Vite) app; the API is FastAPI with PyJWT for login, `google-genai` for Gemini, and the standard library `sqlite3` module for the bundled SQLite file. Environment variables are loaded from `.env` at the API layer (`python-dotenv`).
+
+**Authentication.** The client posts credentials to `POST /api/login`. On success the API returns a JWT signed with `JWT_SECRET`. The SPA stores the token (e.g. `localStorage`) and sends `Authorization: Bearer <token>` on protected calls. `GET /api/data` and `POST /api/ai-request` depend on `get_current_user`, which validates the JWT; invalid or missing tokens yield `401`.
+
+**AI chat pipeline (Task 3).** The client sends the user’s natural language question to `POST /api/ai-request`. The server:
+
+1. Loads **schema only** from the SQLite file (table names and columns via `PRAGMA table_info`) — no row data is sent to the model at this stage.
+2. Calls **Gemini** with structured JSON output (`{ "sql": "..." }`) so the model returns a single SQLite `SELECT` (or `WITH ... SELECT`).
+3. **Validates** the SQL programmatically (read-only `SELECT` / `WITH`, forbidden keywords, no `sqlite_*` system tables, no semicolons for multi-statements).
+4. **Executes** the query against the same `.db` file using a **read-only** SQLite URI (`mode=ro`) and caps rows (configurable via `AI_SQL_MAX_ROWS`, default 200).
+5. Calls **Gemini** again with a compact JSON payload of columns, rows, and a truncation flag, and asks for a concise natural-language answer grounded only in that result.
+
+The HTTP response includes the final answer text, the model id, the generated SQL (for transparency), and an optional `result_preview` for debugging.
+
+---
+
 ## Evaluation Criteria
 
 | Area                        | What We Are Looking For                                                                 |
