@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from database import describe_schema, get_db_path, list_user_tables
 from deps import get_current_user
 from models.ai_query import AiQueryRequest
-from sql_chat import answer_user_text, parse_sql_from_model_text, sql_generation_user_text
+from utils.sql_chat import answer_user_text, parse_sql_from_model_text, sql_generation_user_text
 from sql_guard import SqlValidationError, execute_select
 
 router = APIRouter(prefix="/api", tags=["ai"])
