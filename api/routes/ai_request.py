@@ -15,7 +15,7 @@ def ai_request(
     body: AiQueryRequest,
     _user: dict = Depends(get_current_user),
 ):
-    """Send `query` to Google Gemini via the GenAI SDK (see Gemini API quickstart)."""
+    """Send `query` to Google Gemini via the GenAI SDK."""
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         raise HTTPException(
@@ -23,7 +23,18 @@ def ai_request(
             detail="GEMINI_API_KEY is not configured",
         )
     model = os.environ.get("GEMINI_MODEL", "gemini-3-flash-preview")
-    client = genai.Client(api_key=api_key)
+
+    try:
+        client = genai.Client(api_key=api_key)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "message": "Failed to initialize Gemini client",
+                "error": str(exc),
+            },
+        ) from exc
+    
     try:
         response = client.models.generate_content(
             model=model,

@@ -106,7 +106,7 @@ export function HomeScreen({ displayName, onLogout }: HomeScreenProps) {
               >
                 {isAiPending ? "Sending…" : "Submit"}
               </button>
-              {isAiPending && <p className="ai-query-status">Running AI…</p>}
+              {isAiPending && <p className="ai-query-status">Thinking…</p>}
               {isAiError && (
                 <p className="ai-query-error" role="alert">
                   {aiError instanceof Error
