@@ -83,3 +83,54 @@ body {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+
+.data-section-query button {
+  align-self: flex-start;
+  padding: 0.45rem 0.75rem;
+  font: inherit;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #f8f8f8;
+}
+
+.data-section-query button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.ai-query-status {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.ai-query-error {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #a00;
+}
+
+.ai-query-result {
+  margin-top: 0.25rem;
+}
+
+.ai-query-result-meta {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.ai-query-result-text {
+  margin: 0;
+  padding: 0.5rem 0.6rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fafafa;
+  max-height: min(40vh, 16rem);
+  overflow: auto;
+}

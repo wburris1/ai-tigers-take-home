@@ -22,7 +22,15 @@ export function HomeScreen({ displayName, onLogout }: HomeScreenProps) {
     sentinelRef,
   } = useHomeScreenData();
 
-  const { query, onQueryChange } = useQueryInput();
+  const {
+    query,
+    onQueryChange,
+    onSubmit,
+    aiResult,
+    isAiPending,
+    isAiError,
+    aiError,
+  } = useQueryInput();
 
   return (
     <div className="app">
@@ -91,6 +99,29 @@ export function HomeScreen({ displayName, onLogout }: HomeScreenProps) {
                 onChange={onQueryChange}
                 autoComplete="off"
               />
+              <button
+                type="button"
+                onClick={onSubmit}
+                disabled={isAiPending || !query.trim()}
+              >
+                {isAiPending ? "Sending…" : "Submit"}
+              </button>
+              {isAiPending && <p className="ai-query-status">Running AI…</p>}
+              {isAiError && (
+                <p className="ai-query-error" role="alert">
+                  {aiError instanceof Error
+                    ? aiError.message
+                    : "AI request failed."}
+                </p>
+              )}
+              {aiResult && (
+                <div className="ai-query-result" aria-live="polite">
+                  <p className="ai-query-result-meta">
+                    Model: <code>{aiResult.model}</code>
+                  </p>
+                  <pre className="ai-query-result-text">{aiResult.text}</pre>
+                </div>
+              )}
             </div>
           </>
         )}
