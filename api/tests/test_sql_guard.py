@@ -2,7 +2,7 @@ import sqlite3
 
 import pytest
 
-from sql_guard import SqlValidationError, execute_select, validate_select_sql
+from utils.sql_guard import SqlValidationError, execute_select, validate_select_sql
 
 
 @pytest.mark.parametrize(

@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from sql_chat import parse_sql_from_model_text
+from utils.sql_chat import parse_sql_from_model_text
 
 
 def test_parse_sql_from_json_object():
