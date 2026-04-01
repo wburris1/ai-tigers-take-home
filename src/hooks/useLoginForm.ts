@@ -1,8 +1,8 @@
 import {
-  FormEvent,
   useCallback,
   useState,
   type ChangeEvent,
+  type SubmitEvent,
 } from "react";
 import { useLogin } from "./api/useLogin";
 
@@ -32,7 +32,7 @@ export function useLoginForm(options: UseLoginFormOptions = {}) {
   );
 
   const onSubmit = useCallback(
-    (event: FormEvent<HTMLFormElement>) => {
+    (event: SubmitEvent<HTMLFormElement>) => {
       event.preventDefault();
       mutate(
         { email, password },
