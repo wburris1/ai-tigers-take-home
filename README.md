@@ -10,6 +10,23 @@
 3. Running this script will install all dependencies and start the web page and API locally: <pre> npm run dev:all </pre>
 4. Access the web page at [localhost](http://localhost:3000/) or use the link provided from the logs.
 
+### Alternative: separate terminals (see API logs clearly)
+
+`npm run dev:all` starts the API in the background and Vite in the foreground, so API logs are mixed with frontend output. To run the stack yourself with Uvicorn logs in their own terminal, run `npm install` once from the repo root, then:
+
+**Terminal 1 — API** From the repo root:
+
+<pre>
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r api/requirements.txt
+npm run dev:api
+</pre>
+
+**Terminal 2 — frontend:** <pre> npm run dev </pre>
+
+Open [localhost](http://localhost:3000/) as usual.
+
 ## Infrastructure
 
 **Stack**
