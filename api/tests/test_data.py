@@ -1,7 +1,6 @@
 import sqlite3
 
 import jwt
-import pytest
 from fastapi.testclient import TestClient
 
 from config import JWT_SECRET, VALID_EMAIL, VALID_PASSWORD, USER_NAME
