@@ -4,7 +4,8 @@
 
 1. Add your Gemini API key to .env.example and run <pre> cp .env.example .env </pre>
 2. Ensure Node.js is installed on your machine, if not follow this page: [Node](https://nodejs.org/en/download)
-3. <pre> npm run dev:all </pre>
+3. Running this script will install all dependencies and start the frontend and API locally: <pre> npm run dev:all </pre>
+4. Access the web page at [localhost](http://localhost:3000/) or use the link provided from the logs.
 
 ## Infrastructure
 
