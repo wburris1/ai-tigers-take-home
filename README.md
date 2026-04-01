@@ -1,137 +1,42 @@
-<div align="center">
-  <img src="constellationsoftware-icon.png" alt="Constellation" width="220" />
-  <br /><br />
-</div>
+# Wilder's Submission
 
-# AI Solutions Analyst — Technical Assessment
+## Setup Instructions
 
-Please use the following repository as a template: [Constellation-Engineering/ai-tigers-technical](https://github.com/Constellation-Engineering/ai-tigers-technical)
+## Infrastructure
+**Stack**
+I built the frontend using React for the UI to create clean and simple components and state management, and used Vite for fast and easy bundling/startup. I wrote the core frontend logic in TypeScript to guarantee type safety. I used TanStack React Query hooks to make asynchronous requests to the backend because it handles caching automatically, and makes error handling, refetching, and more much simpler.
+For the backend, I used Python given its extensive access to libraries and ease of use, especially for making requests to GenAI APIs. I set up a REST API with FastAPI due to its speed and simplification of the development process. For simple token encoding/decoding I used the PyJWT library. I used the `google-genai` library to make requests to the Gemini API as instructed by Google's Gemini API Quickstart guide. For handling SQL queries I used the `sqlite3` library.
 
-Welcome to the Constellation AI Solutions Analyst technical assessment. We are excited to see your skills in action.
+**Authentication**
+For the authentication flow, the client posts credentials to `POST /api/login`. On success the API returns a JWT signed with `JWT_SECRET`. The SPA stores the token (e.g. `localStorage`) and sends `Authorization: Bearer <token>` on protected calls. `GET /api/data` and `POST /api/ai-request` depend on `get_current_user`, which validates the JWT; invalid or missing tokens yield `401` error.
 
-This assessment is designed to evaluate a range of practical skills you will use day-to-day as an AI Solutions Analyst: authentication fundamentals, working with external APIs, basic prompt engineering, and the ability to ship functional software quickly. Everyone here leverages AI tooling to accelerate development — we expect you to do the same.
+**AI Pipeline**
+The client sends the user’s natural language question to `POST /api/ai-request`. The server:
 
-> **Note on UI/UX:** This project is judged purely on functionality. Do not spend time polishing the interface. We care about robust backend logic, correct data flow, and problem-solving ability.
-
----
-
-## The Task
-
-Build a locally-runnable web application in any language/framework of your choosing. The application must satisfy the following three areas of functionality.
-
----
-
-## Features to Implement
-
-### 1. Authentication
-
-Implement a basic login screen with a simple hardcoded credential check. No real authentication infrastructure is expected (no password hashing, no user database, no OAuth, etc.). The login should accept **only** these exact credentials:
-
-| Field    | Value                            |
-| -------- | -------------------------------- |
-| Email    | `example@helloconstellation.com` |
-| Password | `ConstellationInterview123!`     |
-
-- A plain string comparison against the hardcoded values above is sufficient.
-- On successful login, generate and store a **JWT token** to manage the session.
-- The authenticated user's name (e.g., "Example User") must be visible in the UI after login.
-- All routes beyond the login screen must be protected — unauthenticated requests should redirect to login.
-
----
-
-### 2. Data Table Preview
-
-You will be provided with a `.db` file (SQLite) containing a dataset. Once authenticated, the user must be able to:
-
-- View the data in a **scrollable table** that previews all rows and columns.
-- The table must load the data directly from the provided `.db` file — no external database setup required.
-
----
-
-### 3. AI-Powered Chat Interface
-
-Below the data table, implement a plain-English chat input. The user should be able to type a question about the data (e.g., *"How many records are from New York?"* or *"What is the average value in column X?"*) and receive a response.
-
-**Requirements:**
-
-- Use the **Google Gemini API** as the underlying model. Your API key must be read from an environment variable — **do not hardcode or commit it**.
-- The AI agent must translate the user's natural language question into a SQL query, run it against the `.db` file, and return a clear, human-readable answer.
-- The parsing, querying, and response logic must be handled programmatically — no passing raw HTML or full table dumps to the model.
-
----
-
-## Submission Requirements
-
-Your submission consists of three parts:
-
-### (1) Infrastructure Writeup
-
-In your README, provide a brief writeup (a few paragraphs is fine) covering:
-
-- What technologies and libraries you chose and why.
-- How the authentication flow works end-to-end (login → JWT → protected routes).
-- How the AI chat pipeline works (user query → SQL generation → execution → response).
-
-### (2) Scale & Production Design
-
-In the same document, address the following (again, a few paragraphs is sufficient):
-
-- If this application were deployed to support **hundreds of monthly active users**, what architectural changes would you make?
-- How would you handle **security** at scale (token management, secrets, rate limiting, etc.)?
-- What observability or monitoring would you add?
-
-### (3) Public GitHub Repository
-
-Use the **"Use this template"** button on this repository to create your own public repo, then build your solution there. Your repository must include:
-
-- A new `README.md` (replacing this one) with clear instructions to run the project locally.
-- All required environment variables documented (names, purpose, and where to obtain them — but not the values themselves).
-- The hardcoded credentials listed above so the reviewer can log in without any additional setup.
-- A working application reachable at `localhost:3000` (or equivalent) after following your README.
-
-Submit the link to your repository when complete.
-
----
-
-## Implementation notes (this fork)
-
-This section satisfies the **Infrastructure Writeup** expectation for the solution in this repository.
-
-**Stack.** The UI is a React (Vite) app; the API is FastAPI with PyJWT for login, `google-genai` for Gemini, and the standard library `sqlite3` module for the bundled SQLite file. Environment variables are loaded from `.env` at the API layer (`python-dotenv`).
-
-**Authentication.** The client posts credentials to `POST /api/login`. On success the API returns a JWT signed with `JWT_SECRET`. The SPA stores the token (e.g. `localStorage`) and sends `Authorization: Bearer <token>` on protected calls. `GET /api/data` and `POST /api/ai-request` depend on `get_current_user`, which validates the JWT; invalid or missing tokens yield `401`.
-
-**AI chat pipeline (Task 3).** The client sends the user’s natural language question to `POST /api/ai-request`. The server:
-
-1. Loads **schema only** from the SQLite file (table names and columns via `PRAGMA table_info`) — no row data is sent to the model at this stage.
-2. Calls **Gemini** with structured JSON output (`{ "sql": "..." }`) so the model returns a single SQLite `SELECT` (or `WITH ... SELECT`).
-3. **Validates** the SQL programmatically (read-only `SELECT` / `WITH`, forbidden keywords, no `sqlite_*` system tables, no semicolons for multi-statements).
-4. **Executes** the query against the same `.db` file using a **read-only** SQLite URI (`mode=ro`) and caps rows (configurable via `AI_SQL_MAX_ROWS`, default 200).
-5. Calls **Gemini** again with a compact JSON payload of columns, rows, and a truncation flag, and asks for a concise natural-language answer grounded only in that result.
+1. Loads schema only from the SQLite file (table names and columns via `PRAGMA table_info`).
+2. Calls Gemini with structured JSON output (`{ "sql": "..." }`) so the model returns a single SQLite `SELECT` (or `WITH ... SELECT`).
+3. Validates the SQL programmatically (read-only `SELECT` / `WITH`, forbidden keywords, no `sqlite_*` system tables, no semicolons for multi-statements).
+4. Executes the query against the same `.db` file using a read-only SQLite URI and caps rows.
+5. Calls Gemini again with a compact JSON payload of columns, rows, and a truncation flag, and asks for a concise natural-language answer grounded only in that result.
 
 The HTTP response includes the final answer text, the model id, the generated SQL (for transparency), and an optional `result_preview` for debugging.
 
----
+## Scale & Production Design
+**Architectural Improvements**
+- To make this web app actually reach users I'd have to serve the frontend with a CDN like Cloudflare or Amazon Cloudfront and host it statically with a platform like Vercel (and integrate Next.js for faster deploys).
+- I would run my API with multiple containers using Docker and manage traffic through a load balancer to ensure it is evenly distributed across containers (using Kubernetes seems like overkill for moderate traffic). I'd deploy the Dockerized API through a cloud provider like AWS or GCP and update my frontend to make requests to the deployed API.
+- Regarding the data, I would migrate to a managed relational database like Postgres and update my API to target the new database (SQLite runs inside the app which will break at scale).
+- For Gemini requests I'd implement usage quotas, rate limiting (will expand in next section), and cap payload size to ensure usage quotas aren't abused, as well as timeouts and retries to improve UX. I may also add Redis caching for duplicate prompts and small SQL query results. 
+- I'd create separate environments for dev/staging/prod to keep testing isolated.
 
-## Evaluation Criteria
+**Security**
+- To improve token management at scale, I'd add refresh tokens and rotation: use a JWT access token with a short expiration and then a refresh token stored in the database securely which refreshes on each request to ensure users cannot steal tokens.
+- I would improve storing secrets by using a secrets manager provided by AWS or Google so secrets don't live in the codebase and config can easily be changed without redeploying.
+- For rate limiting, I would store request counts for each endpoint per user ID or IP address with Redis on the network edge using an Edge provider like Cloudflare or AWS and implement sliding time windows, then only allow requests when the request count within the window is below the cap (e.g. 100 requests per minute). To improve this for Gemini requests, because they are expensive and in this case my backend is the client, I would add a global limiter for requests to that endpoint and potentially even use a queue to process requests at a controlled rate.
+- Other ways I would handle security include input validation using ORM parametrized queries to protect against SQL injection, identifying suspicious users by tracking failed logins and spikes in requests with something like Sentry, enforce strong passwords, and only allow requests from trusted origins.
 
-| Area                        | What We Are Looking For                                                                 |
-| --------------------------- | --------------------------------------------------------------------------------------- |
-| Authentication & JWT        | Correct implementation of login flow and token-based session management                 |
-| Data Handling               | Ability to read from a SQLite file and surface data cleanly                             |
-| AI Integration              | Structured prompting, SQL generation, and clean response formatting via Gemini          |
-| Code Quality & Organization | Readable, organized code — not perfect, but maintainable                                |
-| Version Control             | Meaningful commits, clean repo structure                                                |
-| Documentation               | Clear README, infrastructure writeup, and scale discussion                              |
-
----
-
-## Notes
-
-- **AI use is not only allowed, but strongly encouraged.** A large part of this role is the ability to leverage tools like Cursor, GitHub Copilot, and AI agents to ship quickly. This project would take significantly longer than necessary without them.
-- Do not worry about deploying the application — local execution is sufficient.
-- If you have any questions about the requirements, use your best judgment and document your assumptions.
-
----
-
-*Good luck — we look forward to reviewing your solution.*
+**Monitoring**
+- For tracking general app metrics I would use Prometheus to track performance like latency, query times, etc..., usage metrics like user counts and request counts, request failures and exceptions, and system health like CPU, memory, network, and disk usage.
+- I would improve logging with Sentry for any meaningful events in the backend and log more extensive data like timestamps, error stack traces, and anything else that may be relevant.
+- I would add healthchecks to every endpoint which ping periodically and integrate with a load balancer to remove failing instances.
+- Given all this logging, I would use a dashboard like Datadog to visualize it and add alerts when a metric goes into a danger zone.
