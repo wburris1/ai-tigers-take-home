@@ -3,24 +3,29 @@
 ## Setup Instructions
 
 1. Add your Gemini API key to .env.example and run <pre> cp .env.example .env </pre>
-2. Ensure Node.js is installed on your machine, if not follow this page: [Node](https://nodejs.org/en/download)
-3. Running this script will install all dependencies and start the frontend and API locally: <pre> npm run dev:all </pre>
+2. Ensure Node.js and Python are installed on your machine, if not follow these pages:
+[Node](https://nodejs.org/en/download)
+[Python](https://www.python.org/downloads/)
+
+3. Running this script will install all dependencies and start the web page and API locally: <pre> npm run dev:all </pre>
 4. Access the web page at [localhost](http://localhost:3000/) or use the link provided from the logs.
 
 ## Infrastructure
 
 **Stack**
-I built the frontend using React for the UI to create clean and simple components and state management, and used Vite for fast and easy bundling/startup. I wrote the core frontend logic in TypeScript to guarantee type safety. I used TanStack React Query hooks to make asynchronous requests to the backend because it handles caching automatically, and makes error handling, refetching, and more much simpler.
-For the backend, I used Python given its extensive access to libraries and ease of use, especially for making requests to GenAI APIs. I set up a REST API with FastAPI due to its speed and simplification of the development process. For simple token encoding/decoding I used the PyJWT library. I used the `google-genai` library to make requests to the Gemini API as instructed by Google's Gemini API Quickstart guide. For handling SQL queries I used the `sqlite3` library.
+I built the frontend using `React` for the UI to create clean and simple components and state management, and used `Vite` for fast and easy bundling/startup. I wrote the core frontend logic in `TypeScript` to guarantee type safety and used `npm` for package management. I used `TanStack React Query` hooks to make asynchronous requests to the backend because it handles caching automatically, and makes error handling, refetching, and more much simpler.
+For the backend, I used `Python` given its extensive access to libraries and ease of use, especially for making requests to GenAI APIs. I set up a REST API with `FastAPI` due to its speed and simplification of the development process. For simple token encoding/decoding I used the `PyJWT` library. I used the `google-genai` library to make requests to the Gemini API as instructed by Google's Gemini API Quickstart guide. For handling SQL queries and data I used the `sqlite3` library.
 
 **Authentication**
-For the authentication flow, the client posts credentials to `POST /api/login`. On success the API returns a JWT signed with `JWT_SECRET`. The SPA stores the token (e.g. `localStorage`) and sends `Authorization: Bearer <token>` on protected calls. `GET /api/data` and `POST /api/ai-request` depend on `get_current_user`, which validates the JWT; invalid or missing tokens yield `401` error.
+The client posts credentials to `POST /api/login`. On success the API returns a JWT signed with `JWT_SECRET`. The SPA stores the token (e.g. `localStorage`) and sends `Authorization: Bearer <token>` on protected calls. `GET /api/data` and `POST /api/ai-request` depend on `get_current_user`, which validates the JWT; invalid or missing tokens yield `401` error.
+
+On the frontend, React Router defines `/login` and `/`; the home route is wrapped in a small protected route guard that redirects to `/login` when no token is present, and successful login navigates to `/`. Visiting `/login` while already signed in redirects to `/`.
 
 **AI Pipeline**
 The client sends the user’s natural language question to `POST /api/ai-request`. The server:
 
 1. Loads schema only from the SQLite file (table names and columns via `PRAGMA table_info`).
-2. Calls Gemini with structured JSON output (`{ "sql": "..." }`) so the model returns a single SQLite `SELECT` (or `WITH ... SELECT`).
+2. Calls Gemini with structured JSON output so the model returns a single SQLite `SELECT` (or `WITH ... SELECT`).
 3. Validates the SQL programmatically (read-only `SELECT` / `WITH`, forbidden keywords, no `sqlite_`* system tables, no semicolons for multi-statements).
 4. Executes the query against the same `.db` file using a read-only SQLite URI and caps rows.
 5. Calls Gemini again with a compact JSON payload of columns, rows, and a truncation flag, and asks for a concise natural-language answer grounded only in that result.
@@ -34,6 +39,7 @@ The HTTP response includes the final answer text, the model id, the generated SQ
 - To make this web app actually reach users I'd have to serve the frontend with a CDN like Cloudflare or Amazon Cloudfront and host it statically with a platform like Vercel (and integrate Next.js for faster deploys).
 - I would run my API with multiple containers using Docker and manage traffic through a load balancer to ensure it is evenly distributed across containers (using Kubernetes seems like overkill for moderate traffic). I'd deploy the Dockerized API through a cloud provider like AWS or GCP and update my frontend to make requests to the deployed API.
 - Regarding the data, I would migrate to a managed relational database like Postgres and update my API to target the new database (SQLite runs inside the app which will break at scale).
+- I would create a users table in the database: store a stable user id, email, password hash or OAuth subject, optional profile fields, and created_at/updated_at. Registration and login would read and write that table, JWTs would reference user id instead of embedding long-lived profile data.
 - For Gemini requests I'd implement usage quotas, rate limiting (will expand in next section), and cap payload size to ensure usage quotas aren't abused, as well as timeouts and retries to improve UX. I may also add Redis caching for duplicate prompts and small SQL query results. 
 - I'd create separate environments for dev/staging/prod to keep testing isolated.
 

@@ -104,9 +104,8 @@ export function HomeScreen({ displayName, onLogout }: HomeScreenProps) {
                 onClick={onSubmit}
                 disabled={isAiPending || !query.trim()}
               >
-                {isAiPending ? "Sending…" : "Submit"}
+                {isAiPending ? "Thinking..." : "Submit"}
               </button>
-              {isAiPending && <p className="ai-query-status">Thinking…</p>}
               {isAiError && (
                 <p className="ai-query-error" role="alert">
                   {aiError instanceof Error
