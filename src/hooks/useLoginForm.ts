@@ -10,10 +10,13 @@ type UseLoginFormOptions = {
   onLoginSuccess?: () => void;
 };
 
+const VALID_EMAIL = "example@helloconstellation.com";
+const VALID_PASSWORD = "ConstellationInterview123!";
+
 export function useLoginForm(options: UseLoginFormOptions = {}) {
   const { onLoginSuccess } = options;
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(VALID_EMAIL);
+  const [password, setPassword] = useState(VALID_PASSWORD);
 
   const { mutate, isPending } = useLogin({ onLoginSuccess });
 

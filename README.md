@@ -2,7 +2,7 @@
 
 ## Setup Instructions
 
-1. Add your Gemini API key to .env.example and run <pre> cp .env.example .env </pre>
+1. Add your Gemini API key (obtained from [Gemini API Keys](https://aistudio.google.com/api-keys?_gl=1*3k9u5b*_up*MQ..&gclid=Cj0KCQjw4a3OBhCHARIsAChaqJO4qWubJ6Ixrr2UwKq6O5t7Pj4QyK_hV1GeQuNq1HiQOmHx8gCbIlYaAgD6EALw_wcB&gbraid=0AAAAACn9t641FhQ0YGwSmp9zlb9eVRNPa&project=gen-lang-client-0955858512)) to .env.example and run <pre> cp .env.example .env </pre>
 2. Ensure Node.js and Python are installed on your machine, if not follow these pages:
 [Node](https://nodejs.org/en/download)
 [Python](https://www.python.org/downloads/)
