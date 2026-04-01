@@ -36,7 +36,7 @@ For the backend, I used `Python` given its extensive access to libraries and eas
 **Authentication**
 The client posts credentials to `POST /api/login`. On success the API returns a JWT signed with `JWT_SECRET`. The SPA stores the token (e.g. `localStorage`) and sends `Authorization: Bearer <token>` on protected calls. `GET /api/data` and `POST /api/ai-request` depend on `get_current_user`, which validates the JWT; invalid or missing tokens yield `401` error.
 
-On the frontend, React Router defines `/login` and `/`; the home route is wrapped in a small protected route guard that redirects to `/login` when no token is present, and successful login navigates to `/`. Visiting `/login` while already signed in redirects to `/`.
+On the frontend, React Router defines `/login` and `/`; the home route is wrapped in a small protected route guard that redirects to `/login` when no token is present, and successful login navigates to `/`. Visiting `/login` while already signed in redirects to `/`. On 401 errors from the API or if the token is expired, the client redirects to login.
 
 **AI Pipeline**
 The client sends the user’s natural language question to `POST /api/ai-request`. The server:
