@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { getStoredToken } from "../../lib/session";
+import { getStoredToken, invalidateSession } from "../../lib/session";
 
 export type AiQueryVariables = {
   query: string;
@@ -30,6 +30,7 @@ async function postAiRequest(variables: AiQueryVariables): Promise<AiQueryResult
     body: JSON.stringify({ query: variables.query }),
   });
   if (res.status === 401) {
+    invalidateSession();
     throw new Error("Session expired. Log in again.");
   }
   if (!res.ok) {

@@ -1,18 +1,34 @@
-import { useCallback, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { decodeJwtPayload } from "../lib/jwt";
-import { clearStoredToken, getStoredToken } from "../lib/session";
+import {
+  clearStoredToken,
+  getValidStoredToken,
+  onAuthExpired,
+} from "../lib/session";
 
 export function useAuthSession() {
-  const [token, setToken] = useState<string | null>(() => getStoredToken());
+  const queryClient = useQueryClient();
+  const [token, setToken] = useState<string | null>(() =>
+    getValidStoredToken(),
+  );
+
+  useEffect(() => {
+    return onAuthExpired(() => {
+      setToken(null);
+      queryClient.clear();
+    });
+  }, [queryClient]);
 
   const onLoginSuccess = useCallback(() => {
-    setToken(getStoredToken());
+    setToken(getValidStoredToken());
   }, []);
 
   const onLogout = useCallback(() => {
     clearStoredToken();
     setToken(null);
-  }, []);
+    queryClient.clear();
+  }, [queryClient]);
 
   const displayName = useMemo(() => {
     if (!token) {

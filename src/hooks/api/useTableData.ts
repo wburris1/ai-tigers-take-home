@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { getStoredToken } from "../../lib/session";
+import { getStoredToken, invalidateSession } from "../../lib/session";
 
 /** Rows fetched per request; must match default `limit` on GET /api/data. */
 export const TABLE_PAGE_SIZE = 50;
@@ -26,6 +26,7 @@ async function fetchTablePage(offset: number): Promise<TableDataPage> {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (res.status === 401) {
+    invalidateSession();
     throw new Error("Session expired. Log in again.");
   }
   if (!res.ok) {

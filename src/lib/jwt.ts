@@ -25,3 +25,12 @@ export function decodeJwtPayload(token: string): JwtPayload | null {
     return null;
   }
 }
+
+/** True if `exp` is present and the token is past that time (UTC, seconds). */
+export function isJwtExpired(token: string): boolean {
+  const payload = decodeJwtPayload(token);
+  if (payload?.exp == null || typeof payload.exp !== "number") {
+    return false;
+  }
+  return payload.exp * 1000 <= Date.now();
+}
